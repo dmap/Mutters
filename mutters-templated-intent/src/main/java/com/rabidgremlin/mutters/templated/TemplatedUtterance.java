@@ -12,7 +12,8 @@ import com.rabidgremlin.mutters.core.SlotMatch;
 import com.rabidgremlin.mutters.core.Slots;
 
 /**
- * This class handles the matching of an utterance against an utterance template.
+ * This class handles the matching of an utterance against an utterance
+ * template.
  * 
  * It also handles the extraction slot data.
  * 
@@ -130,10 +131,12 @@ public class TemplatedUtterance
   {
     if (partIndex == parts.length)
     {
+      // we have matched all parts, make sure there are no tokens remaining
       return tokenIndex == tokens.length;
     }
-    else if (tokenIndex == tokens.length)
+    else if ((tokens.length - tokenIndex) < (parts.length - partIndex))
     {
+      // there are not enough tokens left to match all the remaining parts
       return false;
     }
 
@@ -150,7 +153,8 @@ public class TemplatedUtterance
           return false;
         }
       case SLOT:
-        for (int i = tokenIndex + 1; i <= tokens.length; i++)
+        // to match the original greedy regex we must also use a greedy match
+        for (int i = tokens.length; i > tokenIndex; i--)
         {
           if (match(tokens, i, parts, partIndex + 1, slotMatches))
           {
@@ -159,9 +163,9 @@ public class TemplatedUtterance
           }
         }
         return false;
+      default:
+        return false;
     }
-
-    return false;
   }
 
   @Override
